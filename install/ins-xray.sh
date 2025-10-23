@@ -1,11 +1,10 @@
 #!/bin/bash
 # // wget https://github.com/${GitUser}/
 GitUser="JebonRX"
-clear
 
-#ip
+# // MY IPVPS
 MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
-MYIP2="s/xxxxxxxxx/$MYIP/g";
+clear
 
 # // install socat
 apt install socat
@@ -45,7 +44,7 @@ systemctl stop nginx
 
 # // INSTALL CERTIFICATES
 mkdir /root/.acme.sh
-curl https://raw.githubusercontent.com/${GitUser}/SynXNet/main/acme.sh -o /root/.acme.sh/acme.sh
+curl https://raw.githubusercontent.com/‎JebonRX/SynXNet/main/acme.sh -o /root/.acme.sh/acme.sh
 chmod +x /root/.acme.sh/acme.sh
 /root/.acme.sh/acme.sh --upgrade --auto-upgrade
 /root/.acme.sh/acme.sh --set-default-ca --server letsencrypt
@@ -74,12 +73,12 @@ cat> /usr/local/etc/xray/config.json << END
   "log": {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "none"
+    "loglevel": "info"
        },
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10085,
+      "port": 10085, # CEK USER QUOTA
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -101,26 +100,26 @@ cat> /usr/local/etc/xray/config.json << END
                 "decryption": "none",
                 "fallbacks": [
                     {
-                        "name": "sshws.${domain}",
+                        "name": "sshws.${domain}", # // SSH WS TLS JNGN CURI BERDOSA!!
                         "dest": 2091,
                         "xver": 1
                     },
                     {
-                        "dest": 1211,
+                        "dest": 1211, # // TROJAN TCP TLS
                         "xver": 1
                     },
                     {
-                        "path": "/vless"
+                        "path": "/vless", # // VMESS WS TLS
                         "dest": 1212,
                         "xver": 1
                     },
                     {
-                        "path": "/vmess",
+                        "path": "/vmess", # // VLESS WS TLS
                         "dest": 1213,
                         "xver": 1
                     },
                     {
-                        "path": "/trojan",
+                        "path": "/trojanwstls", # // TROJAN WS TLS
                         "dest": 1214,
                         "xver": 1
                     }
@@ -225,7 +224,7 @@ cat> /usr/local/etc/xray/tcp.json << END
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10085,
+      "port": 10085, # CEK USER QUOTA
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -335,12 +334,12 @@ cat> /usr/local/etc/xray/vless.json << END
   "log": {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "none"
+    "loglevel": "info"
        },
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10086,
+      "port": 10086, # CEK USER QUOTA
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -447,12 +446,12 @@ cat> /usr/local/etc/xray/vlessnone.json << END
   "log": {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "none"
+    "loglevel": "info"
        },
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10086,
+      "port": 10086, # CEK USER QUOTA
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -559,12 +558,12 @@ cat> /usr/local/etc/xray/vmess.json << END
   "log": {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "none"
+    "loglevel": "info"
        },
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10087,
+      "port": 10087, # CEK USER QUOTA
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -671,12 +670,12 @@ cat> /usr/local/etc/xray/vmessnone.json << END
   "log": {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "none"
+    "loglevel": "info"
        },
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10087,
+      "port": 10087, # CEK USER QUOTA
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -787,7 +786,7 @@ cat> /usr/local/etc/xray/trojan.json << END
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10088,
+      "port": 10088, # CEK USER QUOTA
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -812,7 +811,7 @@ cat> /usr/local/etc/xray/trojan.json << END
            "network": "ws",
            "wsSettings": {
              "acceptProxyProtocol": true,
-               "path": "/trojan"
+               "path": "/trojanwstls"
              }
           }
        }
@@ -898,7 +897,7 @@ cat> /usr/local/etc/xray/trojannone.json << END
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10088,
+      "port": 10088, # CEK USER QUOTA
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -923,7 +922,7 @@ cat> /usr/local/etc/xray/trojannone.json << END
            "network": "ws",
            "wsSettings": {
              "acceptProxyProtocol": true,
-               "path": "/trojan"
+               "path": "/trojanwsntls"
              }
           }
        }
@@ -1005,12 +1004,12 @@ cat> /usr/local/etc/xray/none.json << END
   "log" : {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "none"
+    "loglevel": "warning"
   },
   "inbounds": [
       {
       "listen": "127.0.0.1",
-      "port": 10089,
+      "port": 10089, # CEK USER QUOTA
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -1029,21 +1028,21 @@ cat> /usr/local/etc/xray/none.json << END
         "decryption": "none",
         "fallbacks": [
           {
-            "dest": 2092,
+            "dest": 2092, # // SSH WS NONE CURI JA REJA HANGPA!!!
             "xver": 1
           },
           {
-            "path": "/vless",
+            "path": "/vless", # // VLESS NONE
             "dest": 1301,
             "xver": 1
           },
           {
-            "path": "/vmess",
+            "path": "/vmess", # // VMESS NONE
             "dest": 1302,
             "xver": 1
           },
           {
-             "path": "/trojan",
+             "path": "/trojanwsntls", # // TROJAN NONE
             "dest": 1303,
             "xver": 1
           }
@@ -1182,7 +1181,7 @@ cd /usr/bin
 wget -O port-xray "https://raw.githubusercontent.com/${GitUser}/SynXNet/main/change-port/port-xray.sh"
 wget -O certv2ray "https://raw.githubusercontent.com/${GitUser}/SynXNet/main/cert.sh"
 wget -O trojaan "https://raw.githubusercontent.com/${GitUser}/SynXNet/main/menu/trojaan.sh"
-wget -O xraay "https://raw.githubusercontent.com/${GitUser}/SynXNet/main/menu/xraay.sh"
+wget -O xraay "https://raw.githubusercontent.com/${GitUser}/SynXNet/main/menu/xraay2.sh"
 chmod +x port-xray
 chmod +x certv2ray
 chmod +x trojaan

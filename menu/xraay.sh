@@ -7,9 +7,8 @@ source /var/lib/premium-script/ipvps.conf
 export creditt=$(cat /root/provided)
 
 # ip
-MYIP=$(curl -s ipinfo.io/ip )
-MYIP=$(curl -sS ipv4.icanhazip.com)
-MYIP=$(curl -sS ifconfig.me )
+MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
+
 
 # // BANNER COLOUR
 export banner_colour=$(cat /etc/banner)
@@ -70,43 +69,14 @@ export uuid=$(cat /proc/sys/kernel/random/uuid)
 
 read -p "   Bug Address (Example: www.google.com) : " address
 read -p "   Bug SNI/Host (Example : m.facebook.com) : " sni
-read -p "   Input custom UUID (press Enter for random): " uuid_input
 read -p "   Expired (days) : " masaaktif
+
 bug_addr=${address}.
 bug_addr2=$address
 if [[ $address == "" ]]; then
 sts=$bug_addr2
 else
 sts=$bug_addr
-fi
-# normalize/validate function
-normalize_uuid() {
-  local u="$1"
-  # buang braces / quotes / spaces
-  u="${u//[\{\}\"]/}"
-  u="${u// /}"
-  # 32 hex tanpa dash -> tambah dash
-  if [[ "$u" =~ ^[0-9a-fA-F]{32}$ ]]; then
-    echo "${u:0:8}-${u:8:4}-${u:12:4}-${u:16:4}-${u:20:12}" | tr 'A-Z' 'a-z'
-    return 0
-  fi
-  # sudah berbentuk dashed uuid
-  if [[ "$u" =~ ^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$ ]]; then
-    echo "$u" | tr 'A-Z' 'a-z'
-    return 0
-  fi
-  return 1
-}
-
-if [[ -z "$uuid_input" ]]; then
-  uuid="$(cat /proc/sys/kernel/random/uuid)"
-else
-  if normalized="$(normalize_uuid "$uuid_input")"; then
-    uuid="$normalized"
-  else
-    echo "UUID yang anda masukkan tidak sah. Akan generate automatik." >&2
-    uuid="$(cat /proc/sys/kernel/random/uuid)"
-  fi
 fi
 
 export exp=`date -d "$masaaktif days" +"%Y-%m-%d"`
@@ -783,42 +753,46 @@ xraay
 
 # FUCTION CEK USER
 function menu6 () {
-  clear
-  echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
-  echo -e "\033[0;44;37m      ⇱ XRAY Vmess WS User Login  ⇲       \033[0m"
-  echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
-
-  data=( $(grep -e '^#vms' /usr/local/etc/xray/vmess.json | cut -d ' ' -f 2) )
-
-  for akun in "${data[@]}"
-  do
-    if [[ -z "$akun" ]]; then
-      akun="tidakada"
-    fi
-
-    # Ambil IP client unik dari log untuk user $akun dengan parsing kolom ke-3
-    ips=$(grep -w "$akun" /var/log/xray/access.log | awk '{print $3}' | sed -E 's/^(tcp|udp):([^:]+):.*$/\2/' | sort -u)
-
-    if [[ -z "$ips" ]]; then
-      echo "Pengguna : $akun"
-      echo "  Tidak ada IP login"
-      echo ""
-      continue
-    fi
-
-    echo "Pengguna : $akun"
-    count=1
-    while read -r ip; do
-      echo "  $count    $ip"
-      ((count++))
-    done <<< "$ips"
-
-    echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
-    echo ""
-  done
-
-  read -n 1 -s -r -p "Tekan tombol apapun untuk kembali ke menu xray"
-  xray
+clear
+echo -n > /tmp/other.txt
+data=( `cat /usr/local/etc/xray/vmess.json | grep '^#vms' | cut -d ' ' -f 2`); 
+echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
+echo -e "\\E[0;44;37m      ⇱ XRAY Vmess WS User Login  ⇲       \E[0m"
+echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
+for akun in "${data[@]}"
+do
+if [[ -z "$akun" ]]; then
+akun="tidakada"
+fi
+echo -n > /tmp/ipvmess.txt
+data2=( `netstat -anp | grep ESTABLISHED | grep tcp6 | grep xray | awk '{print $5}' | cut -d: -f1 | sort | uniq`);
+for ip in "${data2[@]}"
+do
+jum=$(cat /var/log/xray/access.log | grep -w $akun | awk '{print $3}' | cut -d: -f1 | grep -w $ip | sort | uniq)
+if [[ "$jum" = "$ip" ]]; then
+echo "$jum" >> /tmp/ipvmess.txt
+else
+echo "$ip" >> /tmp/other.txt
+fi
+jum2=$(cat /tmp/ipvmess.txt)
+sed -i "/$jum2/d" /tmp/other.txt > /dev/null 2>&1
+done
+jum=$(cat /tmp/ipvmess.txt)
+if [[ -z "$jum" ]]; then
+echo > /dev/null
+else
+jum2=$(cat /tmp/ipvmess.txt | nl)
+echo "user : $akun";
+echo "$jum2";
+echo ""
+echo -e "\e[$line══════════════════════════════════════════\e[m"
+fi
+rm -rf /tmp/ipvmess.txt
+rm -rf /tmp/other.txt
+done
+echo ""
+read -n 1 -s -r -p "Press any key to back on menu xray"
+xraay
 }
 
 # ADD USER VLESS WS
@@ -845,43 +819,14 @@ export uuid=$(cat /proc/sys/kernel/random/uuid)
 
 read -p "   Bug Address (Example: www.google.com) : " address
 read -p "   Bug SNI/Host (Example : m.facebook.com) : " sni
-read -p "   Input custom UUID (press Enter for random): " uuid_input
 read -p "   Expired (days) : " masaaktif
+
 bug_addr=${address}.
 bug_addr2=$address
 if [[ $address == "" ]]; then
 sts=$bug_addr2
 else
 sts=$bug_addr
-fi
-# normalize/validate function
-normalize_uuid() {
-  local u="$1"
-  # buang braces / quotes / spaces
-  u="${u//[\{\}\"]/}"
-  u="${u// /}"
-  # 32 hex tanpa dash -> tambah dash
-  if [[ "$u" =~ ^[0-9a-fA-F]{32}$ ]]; then
-    echo "${u:0:8}-${u:8:4}-${u:12:4}-${u:16:4}-${u:20:12}" | tr 'A-Z' 'a-z'
-    return 0
-  fi
-  # sudah berbentuk dashed uuid
-  if [[ "$u" =~ ^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$ ]]; then
-    echo "$u" | tr 'A-Z' 'a-z'
-    return 0
-  fi
-  return 1
-}
-
-if [[ -z "$uuid_input" ]]; then
-  uuid="$(cat /proc/sys/kernel/random/uuid)"
-else
-  if normalized="$(normalize_uuid "$uuid_input")"; then
-    uuid="$normalized"
-  else
-    echo "UUID yang anda masukkan tidak sah. Akan generate automatik." >&2
-    uuid="$(cat /proc/sys/kernel/random/uuid)"
-  fi
 fi
 
 export exp=`date -d "$masaaktif days" +"%Y-%m-%d"`
@@ -1209,41 +1154,46 @@ xraay
 
 # USER LOGIN VLESS WS
 function menu12 () {
-  clear
-  echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
-  echo -e "\033[0;44;37m      ⇱ XRAY Vless WS User Login ⇲        \033[0m"
-  echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
-  
-  data=( $(grep -e '^#vls' /usr/local/etc/xray/vless.json | cut -d ' ' -f 2) )
-  
-  for akun in "${data[@]}"
-  do
-    if [[ -z "$akun" ]]; then
-      akun="tidakada"
-    fi
-    
-    ips=$(grep -w "$akun" /var/log/xray/access.log | awk '{print $3}' | sed -E 's/^(tcp|udp):([^:]+):.*$/\2/' | sort -u)
-    
-    if [[ -z "$ips" ]]; then
-      echo "Pengguna : $akun"
-      echo "  Tidak ada IP login"
-      echo ""
-      continue
-    fi
-    
-    echo "Pengguna : $akun"
-    count=1
-    while read -r ip; do
-      echo "  $count    $ip"
-      ((count++))
-    done <<< "$ips"
-    
-    echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
-    echo ""
-  done
-  
-  read -n 1 -s -r -p "Tekan tombol apapun untuk kembali ke menu xray"
-  xraay
+clear
+echo -n > /tmp/other.txt
+data=( `cat /usr/local/etc/xray/vless.json | grep '^#vls' | cut -d ' ' -f 2`);
+echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
+echo -e "\\E[0;44;37m      ⇱ XRAY Vless WS User Login ⇲        \E[0m"
+echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
+for akun in "${data[@]}"
+do
+if [[ -z "$akun" ]]; then
+akun="tidakada"
+fi
+echo -n > /tmp/ipvless.txt
+data2=( `netstat -anp | grep ESTABLISHED | grep tcp6 | grep xray | awk '{print $5}' | cut -d: -f1 | sort | uniq`);
+for ip in "${data2[@]}"
+do
+jum=$(cat /var/log/xray/access.log | grep -w $akun | awk '{print $3}' | cut -d: -f1 | grep -w $ip | sort | uniq)
+if [[ "$jum" = "$ip" ]]; then
+echo "$jum" >> /tmp/ipvless.txt
+else
+echo "$ip" >> /tmp/other.txt
+fi
+jum2=$(cat /tmp/ipvless.txt)
+sed -i "/$jum2/d" /tmp/other.txt > /dev/null 2>&1
+done
+jum=$(cat /tmp/ipvless.txt)
+if [[ -z "$jum" ]]; then
+echo > /dev/null
+else
+jum2=$(cat /tmp/ipvless.txt | nl)
+echo "user : $akun";
+echo "$jum2";
+echo ""
+echo -e "\e[$line══════════════════════════════════════════\e[m"
+fi
+rm -rf /tmp/ipvmess.txt
+rm -rf /tmp/other.txt
+done
+echo ""
+read -n 1 -s -r -p "Press any key to back on menu xray"
+xraay
 }
 
 # CREATE USER VLESS XTLS
@@ -1266,43 +1216,14 @@ until [[ $user =~ ^[a-zA-Z0-9_]+$ && ${CLIENT_EXISTS} == '0' ]]; do
 export uuid=$(cat /proc/sys/kernel/random/uuid)
 read -p "   Bug Address (Example: www.google.com) : " address
 read -p "   Bug SNI/Host (Example : m.facebook.com) : " sni
-read -p "   Input custom UUID (press Enter for random): " uuid_input
 read -p "   Expired (days) : " masaaktif
+
 bug_addr=${address}.
 bug_addr2=$address
 if [[ $address == "" ]]; then
 sts=$bug_addr2
 else
 sts=$bug_addr
-fi
-# normalize/validate function
-normalize_uuid() {
-  local u="$1"
-  # buang braces / quotes / spaces
-  u="${u//[\{\}\"]/}"
-  u="${u// /}"
-  # 32 hex tanpa dash -> tambah dash
-  if [[ "$u" =~ ^[0-9a-fA-F]{32}$ ]]; then
-    echo "${u:0:8}-${u:8:4}-${u:12:4}-${u:16:4}-${u:20:12}" | tr 'A-Z' 'a-z'
-    return 0
-  fi
-  # sudah berbentuk dashed uuid
-  if [[ "$u" =~ ^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$ ]]; then
-    echo "$u" | tr 'A-Z' 'a-z'
-    return 0
-  fi
-  return 1
-}
-
-if [[ -z "$uuid_input" ]]; then
-  uuid="$(cat /proc/sys/kernel/random/uuid)"
-else
-  if normalized="$(normalize_uuid "$uuid_input")"; then
-    uuid="$normalized"
-  else
-    echo "UUID yang anda masukkan tidak sah. Akan generate automatik." >&2
-    uuid="$(cat /proc/sys/kernel/random/uuid)"
-  fi
 fi
 
 export exp=`date -d "$masaaktif days" +"%Y-%m-%d"`
