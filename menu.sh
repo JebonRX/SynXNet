@@ -1,20 +1,19 @@
 #!/bin/bash
 #wget https://github.com/${GitUser}/
 GitUser="JebonRX"
+
 #IZIN SCRIPT
-MYIP=$(curl -sS ipv4.icanhazip.com)
-MYIP=$(curl -s ipinfo.io/ip )
-MYIP=$(curl -sS ipv4.icanhazip.com)
-MYIP=$(curl -sS ifconfig.me )
+MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
 clear
+
 #Domain
 domain=$(cat /usr/local/etc/xray/domain)
 ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10)
 CITY=$(curl -s ipinfo.io/city)
 WKT=$(curl -s ipinfo.io/timezone)
-IPVPS=$(curl -s ipinfo.io/ip )
-IPVPS=$(curl -sS ipv4.icanhazip.com)
-IPVPS=$(curl -sS ifconfig.me )
+IPVPS=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
+#IPVPS=$(curl -sS ipv4.icanhazip.com)
+#IPVPS=$(curl -sS ifconfig.me )
 cname=$(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo)
 cores=$(awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo)
 freq=$(awk -F: ' /cpu MHz/ {freq=$2} END {print freq}' /proc/cpuinfo)
@@ -22,20 +21,25 @@ tram=$(free -m | awk 'NR==2 {print $2}')
 uram=$(free -m | awk 'NR==2 {print $3}')
 fram=$(free -m | awk 'NR==2 {print $4}')
 clear
+
 # OS Uptime
 uptime="$(uptime -p | cut -d " " -f 2-10)"
+
 # USERNAME
 rm -f /usr/bin/user
 username=$(curl https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | grep $MYIP | awk '{print $2}')
 echo "$username" >/usr/bin/user
+
 # Order ID
 rm -f /usr/bin/ver
 user=$(curl https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | grep $MYIP | awk '{print $3}')
 echo "$user" >/usr/bin/ver
+
 # validity
 rm -f /usr/bin/e
 valid=$(curl https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | grep $MYIP | awk '{print $4}')
 echo "$valid" >/usr/bin/e
+
 # DETAIL ORDER
 username=$(cat /usr/bin/user)
 oid=$(cat /usr/bin/ver)
@@ -44,6 +48,7 @@ clear
 version=$(cat /home/ver)
 ver=$( curl https://raw.githubusercontent.com/${GitUser}/version/main/version.conf )
 clear
+
 # CEK UPDATE
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info1="${Green_font_prefix}($version)${Font_color_suffix}"
@@ -51,6 +56,7 @@ Info2="${Green_font_prefix}(LATEST VERSION)${Font_color_suffix}"
 Error="Version ${Green_font_prefix}[$ver]${Font_color_suffix} available${Red_font_prefix}[Please Update]${Font_color_suffix}"
 version=$(cat /home/ver)
 new_version=$( curl https://raw.githubusercontent.com/${GitUser}/version/main/version.conf | grep $version )
+
 #Status Version
 if [ $version = $new_version ]; then
 stl="${Info2}"
@@ -58,6 +64,7 @@ else
 stl="${Error}"
 fi
 clear
+
 # Getting CPU Information
 cpu_usage1="$(ps aux | awk 'BEGIN {sum=0} {sum+=$3}; END {print sum}')"
 cpu_usage="$((${cpu_usage1/\.*/} / ${corediilik:-1}))"
@@ -80,20 +87,24 @@ cpu_usage+=" %"
 #dyest="$(vnstat -i eth0 | grep "yesterday" | awk '{print $2" "substr ($3, 1, 1)}')"
 #uyest="$(vnstat -i eth0 | grep "yesterday" | awk '{print $5" "substr ($6, 1, 1)}')"
 #tyest="$(vnstat -i eth0 | grep "yesterday" | awk '{print $8" "substr ($9, 1, 1)}')"
-Download/Upload current month
+#Download/Upload current month
 #dmon="$(vnstat -i eth0 -m | grep "$(date +"%b '%y")" | awk '{print $3" "substr ($4, 1, 1)}')"
 #umon="$(vnstat -i eth0 -m | grep "$(date +"%b '%y")" | awk '{print $6" "substr ($7, 1, 1)}')"
 #tmon="$(vnstat -i eth0 -m | grep "$(date +"%b '%y")" | awk '{print $9" "substr ($10, 1, 1)}')"
+
 # Interface vnstat
 interface1="$(ifconfig | awk 'NR==1 {sub(/:$/, "", $1); print $1}')"
+
 # Download/Upload today
 dtoday="$(vnstat -i "$interface1" | grep "today" | awk '{print $2" "substr ($3, 1, 1)}')"
 utoday="$(vnstat -i "$interface1" | grep "today" | awk '{print $5" "substr ($6, 1, 1)}')"
 ttoday="$(vnstat -i "$interface1" | grep "today" | awk '{print $8" "substr ($9, 1, 1)}')"
+
 # Download/Upload yesterday
 dyest="$(vnstat -i "$interface1" | grep "yesterday" | awk '{print $2" "substr ($3, 1, 1)}')"
 uyest="$(vnstat -i "$interface1" | grep "yesterday" | awk '{print $5" "substr ($6, 1, 1)}')"
 tyest="$(vnstat -i "$interface1" | grep "yesterday" | awk '{print $8" "substr ($9, 1, 1)}')"
+
 # Download/Upload current month
 dmon="$(vnstat -i "$interface1" -m | awk 'NR==6 {print $2" "substr ($3, 1, 1)}')"
 umon="$(vnstat -i "$interface1" -m | awk 'NR==6 {print $5" "substr ($6, 1, 1)}')"
@@ -114,10 +125,12 @@ else
 fi
 echo -e "\e[32mloading...\e[0m"
 clear
+
 # CERTIFICATE STATUS
 d1=$(date -d "$valid" +%s)
 d2=$(date -d "$today" +%s)
 certifacate=$(((d1 - d2) / 86400))
+
 # TOTAL ACC CREATE VMESS WS
 vmess=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
 # TOTAL ACC CREATE  VLESS WS
@@ -130,6 +143,7 @@ trtls=$(grep -c -E "^#trx " "/usr/local/etc/xray/tcp.json")
 trws=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
 # TOTAL ACC CREATE OVPN SSH
 total_ssh="$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd | wc -l)"
+
 # PROVIDED
 creditt=$(cat /root/provided)
 # BANNER COLOUR
@@ -150,6 +164,7 @@ number=$(cat /etc/number)
 banner=$(cat /usr/bin/bannerku)
 ascii=$(cat /usr/bin/test)
 clear
+
 echo -e "\e[$banner_colour"
 figlet -f $ascii "$banner"
 echo -e "\e[$text VPS Script"
@@ -167,9 +182,8 @@ echo -e "  \e[$text System Uptime        : $uptime"
 echo -e "  \e[$text Ip Vps/Address       : $IPVPS"
 echo -e "  \e[$text Domain Name          : $domain\e[0m"
 #echo -e "  \e[$text Organization         : $( curl -s ipinfo.io/org )"
-echo -e "  \e[$text Order ID             : $oid"
-echo -e "  \e[$text Expired Status       : $exp $sts"
-echo -e "  \e[$text Provided By          : $creditt"
+#echo -e "  \e[$text Order ID             : $oid"
+#echo -e "  \e[$text Expired Status       : $exp $sts"
 echo -e " \e[$line╒════════════════════════════════════════════════════════════╕\e[m"
 echo -e "  \e[$text Traffic\e[0m       \e[${text}Today      Yesterday        Month   "
 echo -e "  \e[$text Download\e[0m   \e[${text}   $dtoday    $dyest       $dmon   \e[0m"
@@ -195,10 +209,11 @@ echo -e "  \e[$number (•8)\e[m \e[$below REBOOT VPS\e[m           \e[$number (
 echo -e ""
 echo -e "  \e[$below[Ctrl + C] For exit from main menu\e[m"
 echo -e " \e[$line╒════════════════════════════════════════════════════════════╕\e[m"
-echo -e "  \e[$below Version Name         : SSH XRAY WEBSOCKET SynXNet v2.2"
-echo -e "  \e[$below Autoscript By        : NILPHREAKZ"
-echo -e "  \e[$below Certificate Status   : Expired in $certifacate days"
-echo -e "  \e[$below Client Name          : $username"
+echo -e "  \e[$below Version Name         : SSH XRAY WEBSOCKET SynXNet v2.3"
+echo -e "  \e[$below Autoscript By        : NevermoreSSH "
+echo -e "  \e[$text Provided By          : $creditt"
+#echo -e "  \e[$below Certificate Status   : Expired in $certifacate days"
+#echo -e "  \e[$below Client Name          : $username"
 echo -e " \e[$line╘════════════════════════════════════════════════════════════╛\e[m"
 echo -e "\e[$below "
 read -p " Select menu :  " menu
