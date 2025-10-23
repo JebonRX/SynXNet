@@ -11,49 +11,17 @@
 </p>
 
 <p align="center">
-  
-## ♦️Update & Upgrade First Your VPS for Debian♦️
 
-  ```html
-  apt-get update && apt-get upgrade -y && update-grub && sleep 2 && reboot
-  
-  ```
- or
- 
- 
-   ```html
-  apt update -y && apt upgrade -y && apt dist-upgrade -y && reboot
-
-  ```
-
-## ♦️Update & Upgrade First Your VPS for Ubuntu♦️
-
-  ```html
-  apt-get update && apt-get upgrade -y && apt dist-upgrade -y && update-grub && sleep 2 && reboot
-
-  ```
-  
- or
-   ```html
-  apt-get update && apt-get upgrade -y && apt dist-upgrade -y && update-grub && reboot
-
-  ```
  
  
 ## ♦️INSTALLATION SCRIPT♦️
 ipv4 only
   ```html
-sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1 && apt update && apt install -y bzip2 gzip coreutils screen curl && wget https://raw.githubusercontent.com/JebonRX/SynXNet/main/setup.sh && chmod +x setup.sh && sed -i -e 's/\r$//' setup.sh && screen -S setup ./setup.sh
-
-  ```
-or 
- ```html
-sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1 && apt update && apt install -y bzip2 gzip coreutils screen curl && wget https://raw.githubusercontent.com/‎JebonRX/SynXNet/main/setup2.sh && chmod +x setup2.sh && sed -i -e 's/\r$//' setup2.sh && screen -S setup ./setup2.sh
-
+apt update -y && apt upgrade -y && apt dist-upgrade -y && sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1 && apt update && apt install -y bzip2 gzip coreutils screen curl wget && wget https://raw.githubusercontent.com/JebonRX/SynXNet/main/setup.sh && chmod +x setup.sh && sed -i -e 's/\r$//' setup.sh && screen -S setup ./setup.sh
   ```
 ipv4 + ipv6
  ```html
-apt update && apt install -y bzip2 gzip coreutils screen curl && wget https://raw.githubusercontent.com/‎JebonRX/SynXNet/main/setup3.sh && chmod +x setup3.sh && sed -i -e 's/\r$//' setup3.sh && screen -S setup ./setup3.sh
+apt update && apt install -y bzip2 gzip coreutils screen curl wget && wget https://raw.githubusercontent.com/‎JebonRX/SynXNet/main/setup3.sh && chmod +x setup3.sh && sed -i -e 's/\r$//' setup3.sh && screen -S setup ./setup3.sh
   ```
   
  Server Information & Other Features:-
