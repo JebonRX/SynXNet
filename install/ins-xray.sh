@@ -3,6 +3,10 @@
 GitUser="JebonRX"
 clear
 
+#ip
+MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
+MYIP2="s/xxxxxxxxx/$MYIP/g";
+
 # // install socat
 apt install socat
 
