@@ -1,34 +1,6 @@
 #!/bin/bash
 # // wget https://github.com/${GitUser}/
 GitUser="JebonRX"
-
-# // MY IPVPS
-export MYIP=$(curl -sS ipv4.icanhazip.com)
-MYIP=$(curl -s ipinfo.io/ip )
-MYIP=$(curl -sS ipv4.icanhazip.com)
-MYIP=$(curl -sS ifconfig.me )
-
-# // GETTING
-VALIDITY () {
-    today=`date -d "0 days" +"%Y-%m-%d"`
-    Exp1=$(curl -sS https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | grep $MYIP | awk '{print $4}')
-    if [[ $today < $Exp1 ]]; then
-    echo -e "\e[32mYOUR SCRIPT ACTIVE..\e[0m"
-    else
-    echo -e "\e[31mYOUR SCRIPT HAS EXPIRED!\e[0m";
-    echo -e "\e[31mPlease renew your ipvps first\e[0m"
-    exit 0
-fi
-}
-IZIN=$(curl -sS https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | awk '{print $5}' | grep $MYIP)
-if [ $MYIP = $IZIN ]; then
-echo -e "\e[32mPermission Accepted...\e[0m"
-VALIDITY
-else
-echo -e "\e[31mPermission Denied!\e[0m";
-echo -e "\e[31mPlease buy script first\e[0m"
-exit 0
-fi
 clear
 
 # // install socat
@@ -63,7 +35,7 @@ touch /var/log/xray/error.log;
 export version="$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases | grep tag_name | sed -E 's/.*"v(.*)".*/\1/' | head -n 1)"
 
 # // INSTALL CORE XRAY
-bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u www-data --version 1.7.5
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u www-data --version 1.6.1
 
 systemctl stop nginx
 
@@ -98,10 +70,10 @@ cat> /usr/local/etc/xray/config.json << END
   "log": {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "info"
-  },
-  "inbounds": [
-    {
+    "loglevel": "none"
+       },
+    "inbounds": [
+        {
       "listen": "127.0.0.1",
       "port": 10085,
       "protocol": "dokodemo-door",
@@ -109,70 +81,65 @@ cat> /usr/local/etc/xray/config.json << END
         "address": "127.0.0.1"
       },
       "tag": "api"
-    },
-    {
-      "port": 443,
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "id": "684a00fa-c4ef-46ce-adb0-70a8dbc1109a",
-            "flow": "xtls-rprx-direct",
-            "level": 0
-          },
-          {
-            "id": "08571082-dbe7-4dba-ae19-16e67a6021b3",
-            "flow": "xtls-rprx-direct",
-            "level": 0,
-            "email": "nil"
-          }
-        ],
-        "decryption": "none",
-        "fallbacks": [
-          {
-            "name": "sshws.${domain}",
-            "dest": 2091,
-            "xver": 1
-          },
-          {
-            "dest": 1211,
-            "xver": 1
-          },
-          {
-            "path": "/vlesswstls",
-            "dest": 1212,
-            "xver": 1
-          },
-          {
-            "path": "/vmesswstls",
-            "dest": 1213,
-            "xver": 1
-          },
-          {
-            "path": "/trojanwstls",
-            "dest": 1214,
-            "xver": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "xtls",
-        "xtlsSettings": {
-          "alpn": ["http/1.1"],
-          "certificates": [
+            },
             {
-              "certificateFile": "/usr/local/etc/xray/xray.crt",
-              "keyFile": "/usr/local/etc/xray/xray.key"
+            "port": 443,
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "${uuid}",
+                        "flow": "xtls-rprx-direct",
+                        "level": 0
+#xray-vless-xtls
+                    }
+                ],
+                "decryption": "none",
+                "fallbacks": [
+                    {
+                        "name": "sshws.${domain}",
+                        "dest": 2091,
+                        "xver": 1
+                    },
+                    {
+                        "dest": 1211,
+                        "xver": 1
+                    },
+                    {
+                        "path": "/vless"
+                        "dest": 1212,
+                        "xver": 1
+                    },
+                    {
+                        "path": "/vmess",
+                        "dest": 1213,
+                        "xver": 1
+                    },
+                    {
+                        "path": "/trojan",
+                        "dest": 1214,
+                        "xver": 1
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "xtls",
+                "xtlsSettings": {
+                "alpn": ["http/1.1"],
+                "certificates": [
+                 {
+                 "certificateFile": "/usr/local/etc/xray/xray.crt",
+                  "keyFile": "/usr/local/etc/xray/xray.key"
+                  }
+                ],
+                "minVersion": "1.2",
+                 "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
+                }
             }
-          ],
-          "minVersion": "1.2",
-          "cipherSuites": "TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
         }
-      }
-    }
-  ],
-  "outbounds": [
+    ],
+    "outbounds": [
     {
       "protocol": "freedom",
       "settings": {}
@@ -254,7 +221,7 @@ cat> /usr/local/etc/xray/tcp.json << END
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10085, # CEK USER QUOTA
+      "port": 10085,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -364,12 +331,12 @@ cat> /usr/local/etc/xray/vless.json << END
   "log": {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "info"
+    "loglevel": "none"
        },
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10086, # CEK USER QUOTA
+      "port": 10086,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -395,7 +362,7 @@ cat> /usr/local/etc/xray/vless.json << END
                 "security": "none",
                 "wsSettings": {
                     "acceptProxyProtocol": true,
-                    "path": "/vlesswstls"
+                    "path": "/vless"
                 }
             }
         }
@@ -476,12 +443,12 @@ cat> /usr/local/etc/xray/vlessnone.json << END
   "log": {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "info"
+    "loglevel": "none"
        },
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10086, # CEK USER QUOTA
+      "port": 10086,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -505,7 +472,7 @@ cat> /usr/local/etc/xray/vlessnone.json << END
          "network": "ws",
             "wsSettings": {
               "acceptProxyProtocol": true,
-                "path": "/vlesswsntls"
+                "path": "/vless"
 
                 }
             }
@@ -588,12 +555,12 @@ cat> /usr/local/etc/xray/vmess.json << END
   "log": {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "info"
+    "loglevel": "none"
        },
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10087, # CEK USER QUOTA
+      "port": 10087,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -619,7 +586,7 @@ cat> /usr/local/etc/xray/vmess.json << END
                 "security": "none",
                 "wsSettings": {
                     "acceptProxyProtocol": true,
-                    "path": "/vmesswstls"
+                    "path": "/vmess"
                 }
             }
         }
@@ -700,12 +667,12 @@ cat> /usr/local/etc/xray/vmessnone.json << END
   "log": {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "info"
+    "loglevel": "none"
        },
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10087, # CEK USER QUOTA
+      "port": 10087,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -729,7 +696,7 @@ cat> /usr/local/etc/xray/vmessnone.json << END
          "network": "ws",
             "wsSettings": {
               "acceptProxyProtocol": true,
-                "path": "/vmesswsntls"
+                "path": "/vmess"
                 }
             }
         }
@@ -816,7 +783,7 @@ cat> /usr/local/etc/xray/trojan.json << END
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10088, # CEK USER QUOTA
+      "port": 10088,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -841,7 +808,7 @@ cat> /usr/local/etc/xray/trojan.json << END
            "network": "ws",
            "wsSettings": {
              "acceptProxyProtocol": true,
-               "path": "/trojanwstls"
+               "path": "/trojan"
              }
           }
        }
@@ -927,7 +894,7 @@ cat> /usr/local/etc/xray/trojannone.json << END
     "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10088, # CEK USER QUOTA
+      "port": 10088,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -952,7 +919,7 @@ cat> /usr/local/etc/xray/trojannone.json << END
            "network": "ws",
            "wsSettings": {
              "acceptProxyProtocol": true,
-               "path": "/trojanwsntls"
+               "path": "/trojan"
              }
           }
        }
@@ -1034,12 +1001,12 @@ cat> /usr/local/etc/xray/none.json << END
   "log" : {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "warning"
+    "loglevel": "none"
   },
   "inbounds": [
       {
       "listen": "127.0.0.1",
-      "port": 10089, # CEK USER QUOTA
+      "port": 10089,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -1058,21 +1025,21 @@ cat> /usr/local/etc/xray/none.json << END
         "decryption": "none",
         "fallbacks": [
           {
-            "dest": 2092, # // SSH WS NONE CURI JA REJA HANGPA!!!
+            "dest": 2092,
             "xver": 1
           },
           {
-            "path": "/vlesswsntls", # // VLESS NONE
+            "path": "/vless",
             "dest": 1301,
             "xver": 1
           },
           {
-            "path": "/vmesswsntls", # // VMESS NONE
+            "path": "/vmess",
             "dest": 1302,
             "xver": 1
           },
           {
-             "path": "/trojanwsntls", # // TROJAN NONE
+             "path": "/trojan",
             "dest": 1303,
             "xver": 1
           }
