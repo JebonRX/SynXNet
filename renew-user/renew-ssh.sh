@@ -4,26 +4,8 @@
 # Run as root.
 
 GitUser="JebonRX"
-MYIP=$(curl -sS ifconfig.me)
-
-# --- permission / validity (sama logic asal, ringkas)
-VALIDITY () {
-    today=$(date -u +"%Y-%m-%d")
-    Exp1=$(curl -s https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | grep "$MYIP" | awk '{print $4}')
-    if [[ -n "$Exp1" && "$today" < "$Exp1" ]]; then
-      return 0
-    else
-      echo -e "\e[31mYOUR SCRIPT HAS EXPIRED or permission missing!\e[0m"
-      exit 1
-    fi
-}
-
-IZIN=$(curl -s https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | awk '{print $5}' | grep -w "$MYIP")
-if [ -z "$IZIN" ]; then
-    echo -e "\e[31mPermission Denied! Please buy script first\e[0m"
-    exit 1
-fi
-VALIDITY
+MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
+clear
 
 # ensure root
 if [ "$(id -u)" -ne 0 ]; then

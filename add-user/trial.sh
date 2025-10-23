@@ -4,35 +4,8 @@
 GitUser="JebonRX"
 
 # Ambil IP awam sekali sahaja
-MYIP=$(curl -sS ipv4.icanhazip.com)
-
+MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
 echo -e "\e[32mloading...\e[0m"
-clear
-
-# Fungsi sahkan tempoh sah skrip
-VALIDITY () {
-    today=$(date -d "0 days" +"%Y-%m-%d")
-    Exp1=$(curl -s https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | grep $MYIP | awk '{print $4}')
-    if [[ $today < $Exp1 ]]; then
-        echo -e "\e[32mYOUR SCRIPT ACTIVE..\e[0m"
-    else
-        echo -e "\e[31mYOUR SCRIPT HAS EXPIRED!\e[0m"
-        echo -e "\e[31mPlease renew your ipvps first\e[0m"
-        exit 0
-    fi
-}
-
-# Periksa kebenaran berdasarkan IP
-IZIN=$(curl -s https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | awk '{print $5}' | grep $MYIP)
-if [[ "$MYIP" = "$IZIN" ]]; then
-    echo -e "\e[32mPermission Accepted...\e[0m"
-    VALIDITY
-else
-    echo -e "\e[31mPermission Denied!\e[0m"
-    echo -e "\e[31mPlease buy script first\e[0m"
-    exit 0
-fi
-
 clear
 
 # Tetapan pemboleh ubah akaun percubaan
