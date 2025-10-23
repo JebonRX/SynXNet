@@ -6,6 +6,7 @@ GitUser="JebonRX"
 MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
 clear
 
+#
 #Domain
 domain=$(cat /usr/local/etc/xray/domain)
 ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10)
