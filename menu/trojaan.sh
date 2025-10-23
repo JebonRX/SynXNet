@@ -439,8 +439,8 @@ until [[ $user =~ ^[a-zA-Z0-9_]+$ && ${user_EXISTS} == '0' ]]; do
 			exit 1
 		fi
 	done
-export patchtls=/nevermore-trojanwstls
-export patchnone=/nevermore-trojanwsntls
+export patchtls=/trojan
+export patchnone=/trojan
 read -p "   Bug Address (Example: www.google.com) : " address
 read -p "   Bug SNI (Example : m.facebook.com) : " sni
 read -p "   Expired (days) : " masaaktif
@@ -550,8 +550,8 @@ export masaaktif="1"
 export exp=$(date -d "$masaaktif days" +"%Y-%m-%d")
 export user=Trial`</dev/urandom tr -dc X-Z0-9 | head -c4`
 
-export patchtls=/nevermore-trojanwstls
-export patchnone=/nevermore-trojanwsntls
+export patchtls=/trojanw
+export patchnone=/trojan
 
 read -p "   Bug Address (Example: www.google.com) : " address
 read -p "   Bug SNI (Example : m.facebook.com) : " sni
@@ -738,8 +738,8 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
 			read -rp "Select one client [1-${NUMBER_OF_CLIENTS}]: " CLIENT_NUMBER
 		fi
 	done
-export patchtls=/nevermore-trojanwstls
-export patchnone=/nevermore-trojanwsntls
+export patchtls=/trojan
+export patchnone=/trojan
 export user=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
 export harini=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
 export exp=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
