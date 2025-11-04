@@ -39,17 +39,10 @@ echo -e "\e[0;32mDONE INSTALLING SSH & OVPN\e[0m"
 clear
 
 #install Xray
-printf '\e[0;32mINSTALLING XRAY CORE...\e[0m'
+printf '\e[0;32mINSTALLING XRAY SERVER...\e[0m'
 sleep 1
 wget https://raw.githubusercontent.com/JebonRX/SynXNet/main/install/ins-xray.sh && chmod +x ins-xray.sh && screen -S ins-xray ./ins-xray.sh
 printf '\e[0;32mDONE INSTALLING XRAY CORE\e[0m'
-clear
-
-#install Trojan GO
-printf '\e[0;32mINSTALLING TROJAN GO...\e[0m'
-sleep 1
-wget https://raw.githubusercontent.com/JebonRX/SynXNet/main/install/trojan-go.sh && chmod +x trojan-go.sh && screen -S trojan-go ./trojan-go.sh
-printf '\e[0;32mDONE INSTALLING TROJAN GO\e[0m'
 clear
 
 #install ohp-server
