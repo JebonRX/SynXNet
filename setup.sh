@@ -200,7 +200,6 @@ printf '   \033[1;33mServer will automatically reboot in 5 seconds...\033[0m\n\n
 # remove installer
 rm -f /root/ssh-vpn.sh
 rm -f /root/ins-xray.sh
-rm -f /root/trojan-go.sh
 rm -f /root/set-br.sh
 rm -f /root/ohp.sh
 rm -f /root/ohp-dropbear.sh
