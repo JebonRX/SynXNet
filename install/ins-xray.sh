@@ -1,8 +1,9 @@
 #!/bin/bash
-MYIP=$(curl -sS ipv4.icanhazip.com)
+# install unknown packages
+MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
 domain=$(cat /root/domain)
 apt install iptables iptables-persistent -y
-apt install curl socat xz-utils wget apt-transport-https gnupg gnupg2 gnupg1 dnsutils lsb-release -y 
+apt install curl toilet socat xz-utils wget apt-transport-https gnupg gnupg2 gnupg1 dnsutils lsb-release -y 
 apt install socat cron bash-completion ntpdate -y
 ntpdate pool.ntp.org
 apt -y install chrony
@@ -65,7 +66,7 @@ cat> /usr/local/etc/xray/config.json << END
    "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10086, # CEK USER QUOTA
+      "port": 10086, ##
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -271,7 +272,7 @@ cat> /usr/local/etc/xray/none.json << END
      "inbounds": [
         {
       "listen": "127.0.0.1",
-      "port": 10085, # CEK USER QUOTA
+      "port": 10085, ##
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
