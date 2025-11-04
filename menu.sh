@@ -1,13 +1,12 @@
 #!/bin/bash
 ############
 # detail vps
-OS1=$(hostnamectl 2>/dev/null | awk -F': ' '/Operating System/ {print $2; exit}')
+OS=$(hostnamectl 2>/dev/null | awk -F': ' '/Operating System/ {print $2; exit}')
 MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
 domain=$(cat /usr/local/etc/xray/domain)
 ISP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
-CITY=$(curl -s ipinfo.io/city )
-WKT=$(curl -s ipinfo.io/timezone )
-IPVPS=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
+
+# detail cpu ram
 cname=$( awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo )
 cores=$( awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo )
 freq=$( awk -F: ' /cpu MHz/ {freq=$2} END {print freq}' /proc/cpuinfo )
@@ -15,12 +14,20 @@ tram=$(free -m | awk 'NR==2 {print $2}')
 uram=$(free -m | awk 'NR==2 {print $3}')
 fram=$(free -m | awk 'NR==2 {print $4}')
 swap=$( free -m | awk 'NR==4 {print $2}' )
-clear
+
+# if no IPv6
+IPVPS=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
+IPV6=$(curl -s -6 ipv6.icanhazip.com)
+
+if [ -z "$IPV6" ]; then
+    IPV6="\e[32m(IPv4 only)\e[0m"
+else
+    IPV6="\e[32m($IPV6)\e[0m"
+fi
 
 # OS Uptime
 uptime="$(uptime -p | cut -d " " -f 2-10)"
 
-clear
 # Getting CPU Information
 cpu_usage1="$(ps aux | awk 'BEGIN {sum=0} {sum+=$3}; END {print sum}')"
 cpu_usage="$((${cpu_usage1/\.*/} / ${corediilik:-1}))"
@@ -43,7 +50,6 @@ tyest="$(vnstat -i $iface | grep "yesterday" | awk '{print $8" "substr ($9, 1, 1
 dmon="$(vnstat -i $iface -m | grep "$(date +"%b '%y")" | awk '{print $3" "substr ($4, 1, 1)}')"
 umon="$(vnstat -i $iface -m | grep "$(date +"%b '%y")" | awk '{print $6" "substr ($7, 1, 1)}')"
 tmon="$(vnstat -i $iface -m | grep "$(date +"%b '%y")" | awk '{print $9" "substr ($10, 1, 1)}')"
-clear
 
 # TOTAL ACC CREATE VMESS WS
 vmess=$(grep -c -E "^#vms " "/usr/local/etc/xray/config.json")
@@ -73,13 +79,13 @@ echo -e "${blue}==================== Premium Script ====================${reset}
 #toilet -f big "Premium" --gay
 figlet -f "$ascii" "Premium" >/dev/null 2>&1 || figlet "Premium"
 echo -e "${blue}================= SERVER INFORMATION ===================${reset}"
-echo -e "${white}Operating System     : $OS1"
+echo -e "${white}Operating System     : $OS"
 echo -e "Kernel               : $(uname -r)"
 echo -e "CPU Model            :$cname"
 echo -e "CPU Info             : ${cores} core /${freq} MHz (${cpu_usage})"
 echo -e "Total RAM            : ${uram} MB / ${tram} MB"
 echo -e "System Uptime        : $uptime"
-echo -e "IP Address           : $IPVPS"
+echo -e "IP Address           : $IPVPS, $IPV6"
 echo -e "Domain Name          : $domain"
 echo -e "${blue}========================================================${reset}"
 echo -e "${white}VMess-WS = ${green}${vmess:-0}${white},  VLess-WS = ${green}${vless:-0}${white},  VLess-XTLS = ${green}${xtls:-0}${reset}"
