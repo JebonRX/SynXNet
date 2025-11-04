@@ -1,11 +1,12 @@
 #!/bin/bash
 MYIP=$(wget -qO- icanhazip.com);
-#Email domain
+# Email domain
 printf '\n\033[1;32m───────────────────────────────────────────────\033[0m\n'
-printf ' \033[1;37mEnter your email Domain / Cloudflare\033[0m\n'
-printf ' \033[1;31m(Press ENTER for default email)\033[0m\n'
+printf '   📧  \033[1;37mEnter your Email Domain / Cloudflare\033[0m\n'
+printf '   \033[1;31m(Press ENTER for default email)\033[0m\n'
 printf '\033[1;32m───────────────────────────────────────────────\033[0m\n'
-printf ' Email : '
+printf '   Email : '
+
 
 # POSIX read
 read email || email=""
@@ -22,11 +23,12 @@ touch /usr/local/etc/xray/email
 echo $sts > /usr/local/etc/xray/email
 printf '\n'
 mkdir /var/lib/premium-script;
+# Subdomain / Domain
 printf '\n\033[1;32m───────────────────────────────────────────────\033[0m\n'
-printf ' \033[1;37mEnter your Subdomain / Domain\033[0m\n'
-printf ' \033[1;31m(Press ENTER to skip)\033[0m\n'
+printf '   🌐  \033[1;37mEnter your Subdomain / Domain\033[0m\n'
+printf '   \033[1;31m(Press ENTER to skip)\033[0m\n'
 printf '\033[1;32m───────────────────────────────────────────────\033[0m\n'
-read -p " Subdomain: " host
+read -p "   Subdomain: " host
 echo "IP=" >> /var/lib/premium-script/ipvps.conf
 echo $host > /root/domain
 mkdir -p /usr/local/etc/xray/
