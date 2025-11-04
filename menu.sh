@@ -61,8 +61,6 @@ xtls=$(grep -c -E "^#vxtls " "/usr/local/etc/xray/config.json")
 trtls=$(grep -c -E "^#trx " "/usr/local/etc/xray/config.json")
 # TOTAL ACC CREATE  TROJAN WS TLS
 trws=$(grep -c -E "^### " "/usr/local/etc/xray/trojanws.json")
-# TOTAL ACC CREATE  TROJAN GO
-trgo=$(grep -c -E "^### " "/etc/trojan-go/akun.conf")
 # TOTAL ACC CREATE OVPN SSH
 total_ssh="$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd | wc -l)"
 
@@ -80,13 +78,13 @@ echo -e "${blue}==================== Premium Script ====================${reset}
 figlet -f "$ascii" "Premium" >/dev/null 2>&1 || figlet "Premium"
 echo -e "${blue}================= SERVER INFORMATION ===================${reset}"
 echo -e "${white}Operating System     : $OS"
-echo -e "Kernel               : $(uname -r)"
-echo -e "CPU Model            :$cname"
-echo -e "CPU Info             : ${cores} core /${freq} MHz (${cpu_usage})"
-echo -e "Total RAM            : ${uram} MB / ${tram} MB"
-echo -e "System Uptime        : $uptime"
-echo -e "IP Address           : $IPVPS, $IPV6"
-echo -e "Domain Name          : $domain"
+echo -e "${white}Kernel               : $(uname -r)"
+echo -e "${white}CPU Model            :$cname"
+echo -e "${white}CPU Info             : ${cores} core /${freq} MHz (${cpu_usage})"
+echo -e "${white}Total RAM            : ${uram} MB / ${tram} MB"
+echo -e "${white}System Uptime        : $uptime"
+echo -e "${white}IP Address           : $IPVPS, $IPV6"
+echo -e "${white}Domain Name          : $domain"
 echo -e "${blue}========================================================${reset}"
 echo -e "${white}VMess-WS = ${green}${vmess:-0}${white},  VLess-WS = ${green}${vless:-0}${white},  VLess-XTLS = ${green}${xtls:-0}${reset}"
 echo -e "${white}SSH/OpenVPN = ${green}${total_ssh:-0}${white},  Trojan-TCP = ${green}${trtls:-0}${reset}"
