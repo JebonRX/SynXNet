@@ -67,17 +67,6 @@ wget https://raw.githubusercontent.com/JebonRX/SynXNet/main/install/set-br.sh &&
 printf '\e[0;32mDONE INSTALLING SET-BR...\e[0m'
 clear
 
-# Colour Default
-echo "1;34m" > /etc/banner
-echo "30m" > /etc/box
-echo "1;34m" > /etc/line
-echo "1;37m" > /etc/text
-echo "1;37m" > /etc/below
-echo "47m" > /etc/back
-echo "1;35m" > /etc/number
-echo Standard > /usr/bin/test
-clear
-
 echo " "
 echo "Installation has been completed!!"
 echo " "
