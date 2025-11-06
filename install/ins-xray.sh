@@ -36,6 +36,14 @@ unzip -q xray.zip && rm -rf xray.zip
 mv xray /usr/local/bin/xray
 chmod +x /usr/local/bin/xray
 
+# Add /usr/local/bin to PATH for root
+if ! grep -q "/usr/local/bin" /root/.bashrc 2>/dev/null; then
+    echo 'export PATH=$PATH:/usr/local/bin' >> /root/.bashrc
+fi
+
+# fix for ubuntu
+export PATH=$PATH:/usr/local/bin
+
 # Make Folder XRay
 mkdir -p /var/log/xray/
 
