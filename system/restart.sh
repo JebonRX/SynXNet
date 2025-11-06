@@ -1,6 +1,4 @@
 #!/bin/bash
-MYIP=$(curl -sS ipv4.icanhazip.com)
-clear
 echo -e ""
 echo -e "======================================"
 echo -e "         \e[0;32mRESTART VPN SERVICE\e[0m"
@@ -40,7 +38,6 @@ case $Restart in
                 /etc/init.d/squid restart
 				systemctl restart xray
 				systemctl restart xray@none
-				systemctl restart trojan-go
 				/etc/init.d/ssrmu restart
 				systemctl restart ohp
 				systemctl restart ohpd
@@ -141,7 +138,6 @@ case $Restart in
                 ;;
 				9)
 				clear
-				systemctl restart trojan-go
                 echo -e ""
                 echo -e "======================================"
                 echo -e ""

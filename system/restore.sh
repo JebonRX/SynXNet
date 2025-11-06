@@ -16,7 +16,7 @@ cp gshadow /etc/
 cp ss.conf /etc/shadowsocks-libev/ss.conf
 cp -r premium-script /var/lib/
 cp -r xray /usr/local/etc/
-cp -r trojan-go /etc//local/
+#cp -r trojan-go /etc//local/
 cp -r public_html /hom
 cp -r shadowsocksr /usre/vps/
 cp crontab /etc/

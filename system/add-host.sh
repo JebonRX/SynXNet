@@ -78,14 +78,14 @@ echo Starting Update SSL Certificate
 sleep 0.5
 source /var/lib/premium-script/ipvps.conf
 systemctl stop xray
-systemctl stop trojan-go
+#systemctl stop trojan-go
 # GENERATE CRT
 /root/.acme.sh/acme.sh --server $acmeh \
         --register-account  --accountemail $emailcf
 /root/.acme.sh/acme.sh --server $acmeh --issue -d $domain --standalone -k ec-256			   
 ~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /usr/local/etc/xray/xray.crt --keypath /usr/local/etc/xray/xray.key --ecc
 systemctl start xray
-systemctl start trojan-go
+#systemctl start trojan-go
 #Done
 echo -e "[${GREEN}Done${NC}]"
 else
