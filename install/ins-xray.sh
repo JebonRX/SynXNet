@@ -62,137 +62,145 @@ cat> /usr/local/etc/xray/config.json << END
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
     "loglevel": "info"
-       },
-   "inbounds": [
-        {
+  },
+  "inbounds": [
+    {
       "listen": "127.0.0.1",
-      "port": 10086, ##
+      "port": 10086,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
       },
       "tag": "api"
-            },
-        {
-            "port": 443,
-            "protocol": "vless",
-            "settings": {
-                "clients": [
-                    {
-                        "id": "${uuid1}",
-                        "flow": "xtls-rprx-direct",
-                        "level": 0
+    },
+    {
+      "port": 443,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "${uuid1}",
+            "flow": "xtls-rprx-vision",
+            "level": 0
 #xray-vless-xtls
-                    }
-                ],
-                "decryption": "none",
-                "fallbacks": [
-                    {
-                        "dest": 1310,
-                        "xver": 1
-                    },
-                    {
-                        "path": "/vmess",
-                        "dest": 1311,
-                        "xver": 1
-                    },
-                    {
-                        "path": "/vless",
-                        "dest": 1312,
-                        "xver": 1
-                    }
-                ]
-            },
-            "streamSettings": {
-                "network": "tcp",
-                "security": "xtls",
-                "xtlsSettings": {
-                    "alpn": [
-                        "http/1.1"
-                    ],
-                    "certificates": [
-                        {
-                            "certificateFile": "/usr/local/etc/xray/xray.crt",
-                            "keyFile": "/usr/local/etc/xray/xray.key"
-                        }
-                    ]
-                }
+          }
+        ],
+        "decryption": "none",
+        "fallbacks": [
+          {
+            "dest": 1310,
+            "xver": 1
+          },
+          {
+            "path": "/vmess",
+            "dest": 1311,
+            "xver": 1
+          },
+          {
+            "path": "/vless",
+            "dest": 1312,
+            "xver": 1
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "alpn": [
+            "h2",
+            "http/1.1"
+          ],
+          "allowInsecure": true,
+          "fingerprint": "chrome",
+          "certificates": [
+            {
+              "ocspStapling": 3600,
+              "certificateFile": "/usr/local/etc/xray/xray.crt",
+              "keyFile": "/usr/local/etc/xray/xray.key"
             }
-        },
-        {
-            "port": 1310,
-            "listen": "127.0.0.1",
-            "protocol": "trojan",
-            "settings": {
-                "clients": [
-                    {
-                        "id": "${uuid2}",
-                        "password": "xxxxxx"
-#trojan
-                    }
-                ],
-                "fallbacks": [
-                    {
-                        "dest": 80
-                    }
-                ]
-            },
-            "streamSettings": {
-                "network": "tcp",
-                "security": "none",
-                "tcpSettings": {
-                    "acceptProxyProtocol": true
-                }
-            }
-        },
-        {
-            "port": 1311,
-            "listen": "127.0.0.1",
-            "protocol": "vmess",
-            "settings": {
-                "clients": [
-                    {
-                        "id": "${uuid3}",
-                        "alterId": 0,
-                        "level": 0
-#xray-vmess-tls
-                    }
-                ]
-            },
-            "streamSettings": {
-                "network": "ws",
-                "security": "none",
-                "wsSettings": {
-                    "acceptProxyProtocol": true,
-                    "path": "/vmess"
-                }
-            }
-        },
-        {
-            "port": 1312,
-            "listen": "127.0.0.1",
-            "protocol": "vless",
-            "settings": {
-                "clients": [
-                    {
-                        "id": "${uuid5}",
-                        "level": 0
-#xray-vless-tls
-                    }
-                ],
-                "decryption": "none"
-            },
-            "streamSettings": {
-                "network": "ws",
-                "security": "none",
-                "wsSettings": {
-                    "acceptProxyProtocol": true,
-                    "path": "/vless"
-                }
-            }
+          ]
         }
-    ],
-    "outbounds": [
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": ["http", "tls"]
+      }
+    },
+    {
+      "port": 1310,
+      "listen": "127.0.0.1",
+      "protocol": "trojan",
+      "settings": {
+        "clients": [
+          {
+            "id": "${uuid2}",
+            "password": "xxxxxx"
+#trojan
+          }
+        ],
+        "fallbacks": [
+          {
+            "dest": 80
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tcpSettings": {
+          "acceptProxyProtocol": true
+        }
+      }
+    },
+    {
+      "port": 1311,
+      "listen": "127.0.0.1",
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "${uuid3}",
+            "alterId": 0,
+            "level": 0
+#xray-vmess-tls
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "none",
+        "wsSettings": {
+          "acceptProxyProtocol": true,
+          "path": "/vmess"
+        }
+      }
+    },
+    {
+      "port": 1312",
+      "listen": "127.0.0.1",
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "${uuid5}",
+            "level": 0
+#xray-vless-tls
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "none",
+        "wsSettings": {
+          "acceptProxyProtocol": true,
+          "path": "/vless"
+        }
+      }
+    }
+  ],
+  "outbounds": [
     {
       "protocol": "freedom",
       "settings": {}
@@ -226,33 +234,29 @@ cat> /usr/local/etc/xray/config.json << END
         "outboundTag": "blocked"
       },
       {
-        "inboundTag": [
-          "api"
-        ],
+        "inboundTag": ["api"],
         "outboundTag": "api",
         "type": "field"
       },
       {
         "type": "field",
         "outboundTag": "blocked",
-        "protocol": [
-          "bittorrent"
-        ]
+        "protocol": ["bittorrent"]
       }
     ]
   },
   "stats": {},
   "api": {
-    "services": [
-      "StatsService"
-    ],
+    "services": ["StatsService"],
     "tag": "api"
   },
   "policy": {
     "levels": {
       "0": {
         "statsUserDownlink": true,
-        "statsUserUplink": true
+        "statsUserUplink": true,
+        "handshake": 2,
+        "connIdle": 120
       }
     },
     "system": {
