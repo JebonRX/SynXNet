@@ -1,4 +1,6 @@
 #!/bin/bash
+MYIP=$(curl -sS ipv4.icanhazip.com)
+clear
 echo -e ""
 echo -e "======================================"
 echo -e "         \e[0;32mRESTART VPN SERVICE\e[0m"

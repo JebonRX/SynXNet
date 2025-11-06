@@ -91,7 +91,7 @@ netf
 dns
 ;;
 15)
-wget -q -O /usr/bin/xraychanger "https://raw.githubusercontent.com/JebonRX/XrayCore-Custompath/main/xraychanger.sh" && chmod +x /usr/bin/xraychanger && xraychanger
+wget -q -O /usr/bin/xraychanger "https://raw.githubusercontent.com/NevermoreSSH/Xcore-custompath/main/xraychanger.sh" && chmod +x /usr/bin/xraychanger && xraychanger
 ;;
 16)
 change-dropbear
@@ -100,7 +100,7 @@ change-dropbear
 passwd
 ;;
 18)
-wget -q -O /usr/bin/swapram "https://raw.githubusercontent.com/JebonRX/swapram/main/swapram.sh" && chmod +x /usr/bin/swapram && swapram
+wget -q -O /usr/bin/swapram "https://raw.githubusercontent.com/NevermoreSSH/swapram/main/swapram.sh" && chmod +x /usr/bin/swapram && swapram
 ;;
 19)
 rm -rf noobzvpns;git clone https://github.com/JebonRX/noobzvpns.git && cd noobzvpns && chmod +x install.sh && ./install.sh
