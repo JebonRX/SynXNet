@@ -1,10 +1,12 @@
 #!/bin/bash
-MYIP=$(curl -sS ipv4.icanhazip.com)
+############
+# Detail VPS
+OS=$(hostnamectl 2>/dev/null | awk -F': ' '/Operating System/ {print $2; exit}')
+MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
 domain=$(cat /usr/local/etc/xray/domain)
-ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10 )
-CITY=$(curl -s ipinfo.io/city )
-WKT=$(curl -s ipinfo.io/timezone )
-IPVPS=$(curl -s ipinfo.io/ip )
+ISP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
+
+# detail cpu ram
 cname=$( awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo )
 cores=$( awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo )
 freq=$( awk -F: ' /cpu MHz/ {freq=$2} END {print freq}' /proc/cpuinfo )
@@ -12,103 +14,155 @@ tram=$(free -m | awk 'NR==2 {print $2}')
 uram=$(free -m | awk 'NR==2 {print $3}')
 fram=$(free -m | awk 'NR==2 {print $4}')
 swap=$( free -m | awk 'NR==4 {print $2}' )
-clear
+
+# if no IPv6
+IPVPS=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
+IPV6=$(curl -s -6 ipv6.icanhazip.com)
+
+if [ -z "$IPV6" ]; then
+    IPV6="\e[32m(IPv4 only)\e[0m"
+else
+    IPV6="\e[32m($IPV6)\e[0m"
+fi
+
 # OS Uptime
 uptime="$(uptime -p | cut -d " " -f 2-10)"
-clear
+
 # Getting CPU Information
 cpu_usage1="$(ps aux | awk 'BEGIN {sum=0} {sum+=$3}; END {print sum}')"
 cpu_usage="$((${cpu_usage1/\.*/} / ${corediilik:-1}))"
 cpu_usage+=" %"
-#Download/Upload today
-dtoday="$(vnstat -i eth0 | grep "today" | awk '{print $2" "substr ($3, 1, 1)}')"
-utoday="$(vnstat -i eth0 | grep "today" | awk '{print $5" "substr ($6, 1, 1)}')"
-ttoday="$(vnstat -i eth0 | grep "today" | awk '{print $8" "substr ($9, 1, 1)}')"
-#Download/Upload yesterday
-dyest="$(vnstat -i eth0 | grep "yesterday" | awk '{print $2" "substr ($3, 1, 1)}')"
-uyest="$(vnstat -i eth0 | grep "yesterday" | awk '{print $5" "substr ($6, 1, 1)}')"
-tyest="$(vnstat -i eth0 | grep "yesterday" | awk '{print $8" "substr ($9, 1, 1)}')"
-#Download/Upload current month
-dmon="$(vnstat -i eth0 -m | grep "$(date +"%b '%y")" | awk '{print $3" "substr ($4, 1, 1)}')"
-umon="$(vnstat -i eth0 -m | grep "$(date +"%b '%y")" | awk '{print $6" "substr ($7, 1, 1)}')"
-tmon="$(vnstat -i eth0 -m | grep "$(date +"%b '%y")" | awk '{print $9" "substr ($10, 1, 1)}')"
-clear
-# CERTIFICATE STATUS
-d1=$(date -d "$valid" +%s)
-d2=$(date -d "$today" +%s)
-certifacate=$(( (d1 - d2) / 86400 ))
-# TOTAL ACC CREATE VMESS WS
+
+# Detect OS
+if grep -qi "ubuntu" /etc/os-release; then
+    OS="ubuntu"
+elif grep -qi "debian" /etc/os-release; then
+    OS="debian"
+else
+    OS="other"
+fi
+
+# Detect interface vnstat
+# Try detect using ifconfig first
+iface="$(ifconfig 2>/dev/null | awk 'NR==1 {sub(/:$/, "", $1); print $1}')"
+
+# If empty, fallback to ip command
+if [ -z "$iface" ]; then
+    iface=$(ip -o link show | awk -F': ' '$2 != "lo" {print $2; exit}')
+fi
+
+
+#############################
+# ✅ Debian (old vnstat format — UPPER)
+#############################
+if [ "$OS" = "debian" ]; then
+
+    # Today
+    dtoday="$(vnstat -i $iface | grep "today" | awk '{print $2" "substr($3,1,1)}')"
+    utoday="$(vnstat -i $iface | grep "today" | awk '{print $5" "substr($6,1,1)}')"
+    ttoday="$(vnstat -i $iface | grep "today" | awk '{print $8" "substr($9,1,1)}')"
+
+    # Yesterday
+    dyest="$(vnstat -i $iface | grep "yesterday" | awk '{print $2" "substr($3,1,1)}')"
+    uyest="$(vnstat -i $iface | grep "yesterday" | awk '{print $5" "substr($6,1,1)}')"
+    tyest="$(vnstat -i $iface | grep "yesterday" | awk '{print $8" "substr($9,1,1)}')"
+
+    # Current month
+    dmon="$(vnstat -i $iface -m | grep "$(date +"%b '%y")" | awk '{print $3" "substr ($4, 1, 1)}')"
+    umon="$(vnstat -i $iface -m | grep "$(date +"%b '%y")" | awk '{print $6" "substr ($7, 1, 1)}')"
+    tmon="$(vnstat -i $iface -m | grep "$(date +"%b '%y")" | awk '{print $9" "substr ($10, 1, 1)}')"
+
+#############################
+# ✅ Ubuntu (vnstat v2 format — LOWER)
+#############################
+elif [ "$OS" = "ubuntu" ]; then
+
+    # Monthly
+    dmon="$(vnstat -m | grep $(date +%Y-%m) | awk '{print $2, $3}')"
+    umon="$(vnstat -m | grep $(date +%Y-%m) | awk '{print $5, $6}')"
+    tmon="$(vnstat -m | grep $(date +%Y-%m) | awk '{print $8, $9}')"
+
+    # Today
+    dtoday="$(vnstat -d | grep $(date +%Y-%m-%d) | awk '{print $2, $3}')"
+    utoday="$(vnstat -d | grep $(date +%Y-%m-%d) | awk '{print $5, $6}')"
+    ttoday="$(vnstat -d | grep $(date +%Y-%m-%d) | awk '{print $8, $9}')"
+
+    # Yesterday
+    dyest="$(vnstat -d | grep $(date -d 'yesterday' +%Y-%m-%d) | awk '{print $2, $3}')"
+    uyest="$(vnstat -d | grep $(date -d 'yesterday' +%Y-%m-%d) | awk '{print $5, $6}')"
+    tyest="$(vnstat -d | grep $(date -d 'yesterday' +%Y-%m-%d) | awk '{print $8, $9}')"
+fi
+
+# total vmess
 vmess=$(grep -c -E "^#vms " "/usr/local/etc/xray/config.json")
-# TOTAL ACC CREATE  VLESS WS
+# total vless
 vless=$(grep -c -E "^#vls " "/usr/local/etc/xray/config.json")
-# TOTAL ACC CREATE  VLESS TCP XTLS
+# total xtls
 xtls=$(grep -c -E "^#vxtls " "/usr/local/etc/xray/config.json")
-# TOTAL ACC CREATE  TROJAN TCP
+# total trojan
 trtls=$(grep -c -E "^#trx " "/usr/local/etc/xray/config.json")
-# TOTAL ACC CREATE  TROJAN WS TLS
-trws=$(grep -c -E "^### " "/usr/local/etc/xray/trojanws.json")
-# TOTAL ACC CREATE OVPN SSH
+# total ssh
 total_ssh="$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd | wc -l)"
-# PROVIDED
-creditt=$(cat /root/provided)
-# BANNER COLOUR
-banner_colour=$(cat /etc/banner)
-# TEXT ON BOX COLOUR
-box=$(cat /etc/box)
-# LINE COLOUR
-line=$(cat /etc/line)
-# TEXT COLOUR ON TOP
-text=$(cat /etc/text)
-# TEXT COLOUR BELOW
-below=$(cat /etc/below)
-# BACKGROUND TEXT COLOUR
-back_text=$(cat /etc/back)
-# NUMBER COLOUR
-number=$(cat /etc/number)
-# BANNER
-banner=$(cat /usr/bin/bannerku)
-ascii=$(cat /usr/bin/test)
+
+# Color
+white="\e[97m"
+yellow="\e[93m"
+blue="\e[94m"
+green="\e[32m"
+reset="\e[0m"
+
+# simple menu
 clear
-echo -e "\e[$banner_colour"
-figlet -f $ascii "$banner"
-echo -e "\e[$text Premium Script"
-echo -e   " \e[$line════════════════════════════════════════════════════════════\e[m"
-echo -e   " \e[$back_text                    \e[30m[\e[$box SERVER INFORMATION\e[30m ]\e[1m                  \e[m"
-echo -e   " \e[$line════════════════════════════════════════════════════════════\e[m"
-echo -e "  \e[$text Cpu Model            :$cname"
-echo -e "  \e[$text Number Of Core       : $cores"
-echo -e "  \e[$text Operating System     : $(hostnamectl 2>/dev/null | awk -F': ' '/Operating System/ {print $2; exit}')"
-echo -e "  \e[$text Cpu Frequency        :$freq MHz"
-echo -e "  \e[$text CPU Usage            : $cpu_usage"
-echo -e "  \e[$text Kernel               : $(uname -r)"
-echo -e "  \e[$text Total Amount Of Ram  : $uram MB / $tram MB"
-echo -e "  \e[$text System Uptime        : $uptime"
-echo -e "  \e[$text Ip Vps/Address       : $IPVPS"
-echo -e "  \e[$text Domain Name          : $domain"
-echo -e "  \e[$text Version Name         : Ultimate Version"
-echo -e "  \e[$text Certificate Status   : Expired in $certifacate days"
-echo -e   " \e[$line════════════════════════════════════════════════════════════\e[m"
-echo -e " \e[$text Ssh/Ovpn   V2ray   Vless   VlessXtls   Trojan-Tcp   Tojan-Go    \e[0m "    
-echo -e " \e[$below    $total_ssh        $vmess        $vless        $xtls           $trtls           $trgo \e[0m "
-echo -e   " \e[$line════════════════════════════════════════════════════════════\e[m"
-echo -e   " \e[$back_text                        \e[30m[\e[$box MAIN MENU\e[30m ]\e[1m                       \e[m"
-echo -e   " \e[$line════════════════════════════════════════════════════════════\e[m"
-echo -e   "  \e[$number (•1)\e[m \e[$below XRAY VMESS & VLESS\e[m          \e[$number (•8)\e[m \e[$below CLEAR LOG VPS\e[m"
-echo -e   "  \e[$number (•2)\e[m \e[$below TROJAN XRAY & GO\e[m            \e[$number (•9)\e[m \e[$below CHECK RUNNING\e[m"
-echo -e   "  \e[$number (•3)\e[m \e[$below OPENSSH & OPENVPN\e[m           \e[$number (10)\e[m \e[$below REBOOT VPS\e[m"
-echo -e   "  \e[$number (•4)\e[m \e[$below PANEL NOOBZVPN\e[m              \e[$number (11)\e[m \e[$below INFO ALL PORT\e[m"
-echo -e   "  \e[$number (•5)\e[m \e[$below SYSTEM MENU\e[m                 \e[$number (12)\e[m \e[$below DAILY BANDWIDTH\e[m"
-echo -e   "  \e[$number (•6)\e[m \e[$below MENU THEMES\e[m                 \e[$number (13)\e[m \e[$below MONTHLY BANDWIDTH\e[m"
-echo -e   "  \e[$number (•7)\e[m \e[$below CHANGE PORT\e[m                 \e[$number (14)\e[m \e[$below LOG OUT\e[m"
-echo -e   " \e[$line════════════════════════════════════════════════════════════\e[m"
-echo -e   "  \e[$below Premium Script Mod by JebonRX"
-echo -e   "  \e[$below Thank you for using script by JebonRX"
-echo -e   " \e[$line════════════════════════════════════════════════════════════\e[m"
-echo -e   ""
-echo -e   "  \e[$below [Ctrl + C] For exit from main menu\e[m"
-echo -e   "\e[$below "
-read -p   "   Select From Options [1-12 or x] :  " menu
-echo -e   ""
+echo -e "${blue}==================== Premium Script ====================${reset}"
+figlet -f "$ascii" "Premium" >/dev/null 2>&1 || figlet "Premium"
+echo -e "${blue}================= SERVER INFORMATION ===================${reset}"
+echo -e "${white}Operating System     : $OS"
+echo -e "${white}Kernel               : $(uname -r)"
+echo -e "${white}CPU Model            : $cname"
+echo -e "${white}CPU Info             : ${cores} core /${freq} MHz (${cpu_usage})"
+echo -e "${white}Total RAM            : ${uram} MB / ${tram} MB"
+echo -e "${white}System Uptime        : $uptime"
+echo -e "${white}IP Address           : $IPVPS, $IPV6"
+echo -e "${white}Domain Name          : $domain"
+echo -e "${blue}========================================================${reset}"
+echo -e "${white}VMess-WS = ${green}${vmess:-0}${white},  VLess-WS = ${green}${vless:-0}${white},  VLess-XTLS = ${green}${xtls:-0}${reset}"
+echo -e "${white}SSH/OpenVPN = ${green}${total_ssh:-0}${white},  Trojan-TCP = ${green}${trtls:-0}${reset}"
+echo -e "${blue}========================================================${reset}"
+echo -e "                     ${white}DATA USAGE${reset}"
+echo -e "${blue}========================================================${reset}"
+echo -e "${white}   Traffic       Today          Yesterday         Month${reset}"
+echo -e "${white}   Download     ${white}$(printf '%-10s' "$dtoday")${white}   $(printf '%-10s' "$dyest")   $(printf '%-10s' "$dmon")${reset}"
+echo -e "${white}   Upload       ${white}$(printf '%-10s' "$utoday")${white}   $(printf '%-10s' "$uyest")   $(printf '%-10s' "$umon")${reset}"
+echo -e "${white}   Total        ${white}$(printf '%-10s' "$ttoday")${white}   $(printf '%-10s' "$tyest")   $(printf '%-10s' "$tmon")${reset}"
+echo -e "${blue}========================================================${reset}"
+echo -e "                     ${white}MAIN MENU${reset}"
+echo -e "${blue}========================================================${reset}"
+echo -e " ${yellow} 1)${white} VMESS & VLESS"
+echo -e " ${yellow} 2)${white} TROJAN TCP"
+echo -e " ${yellow} 3)${white} SSH & OPENVPN"
+echo -e " ${yellow} 4)${white} NOOBZVPN"
+#echo -e ""
+echo -e "${blue}========================================================${reset}"
+echo -e "                     ${white}TOOLS MENU${reset}"
+echo -e "${blue}========================================================${reset}"
+echo -e " ${yellow} 5)${white} SYSTEM MENU"
+echo -e " ${yellow} 6)${white} CHANGE PORT"
+echo -e " ${yellow} 7)${white} CLEAR LOG VPS"
+echo -e " ${yellow} 8)${white} CHECK RUNNING"
+echo -e " ${yellow} 9)${white} REBOOT VPS"
+echo -e " ${yellow}10)${white} INFO ALL PORT"
+echo -e " ${yellow}11)${white} MENU THEMES"
+echo -e " ${yellow}12)${white} LOG OUT"
+echo -e "${blue}========================================================${reset}"
+echo -e "${white}Lite AutoScriptVPN Websocket v1.1"
+echo -e "Last Updated : 4 Nov 2025"
+echo -e "${blue}========================================================${reset}"
+echo ""
+echo -e "${white}[Ctrl + C] to exit from main menu${reset}"
+echo ""
+read -p " Select From Options [1-13 or x]: " menu
+echo ""
+
 case $menu in
 1)
 xraay
