@@ -348,7 +348,7 @@ wget -O port-ohp "https://raw.githubusercontent.com/JebonRX/SynXNet/main/change-
 wget -O port-xray "https://raw.githubusercontent.com/JebonRX/SynXNet/main/change-port/port-xray.sh"
 wget -O panel-domain "https://raw.githubusercontent.com/JebonRX/SynXNet/main/menu/panel-domain.sh"
 wget -O system "https://raw.githubusercontent.com/JebonRX/SynXNet/main/menu/system.sh"
-wget -O themes "https://raw.githubusercontent.com/JebonRX/SynXNet/main/menu/themes.sh"
+#wget -O themes "https://raw.githubusercontent.com/JebonRX/SynXNet/main/menu/themes.sh"
 chmod +x change-dropbear
 chmod +x add-host
 chmod +x menu
@@ -397,7 +397,7 @@ chmod +x port-ohp
 chmod +x port-xray
 chmod +x panel-domain
 chmod +x system
-chmod +x themes
+#chmod +x themes
 chmod +x menu-noobzvpn
 sed -i 's/\r$//' /usr/bin/menu-noobzvpn
 sed -i 's/\r$//' /usr/bin/change-dropbear
