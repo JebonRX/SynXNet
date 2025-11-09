@@ -30,13 +30,13 @@ wget -O autobackup "https://raw.githubusercontent.com/JebonRX/SynXNet/main/syste
 wget -O backup "https://raw.githubusercontent.com/JebonRX/SynXNet/main/system/backup.sh"
 wget -O bckp "https://raw.githubusercontent.com/JebonRX/SynXNet/main/system/bckp.sh"
 wget -O restore "https://raw.githubusercontent.com/JebonRX/SynXNet/main/system/restore.sh"
-wget -O strt "https://raw.githubusercontent.com/JebonRX/SynXNet/main/system/strt.sh"
+#wget -O strt "https://raw.githubusercontent.com/JebonRX/SynXNet/main/system/strt.sh"
 wget -O limit-speed "https://raw.githubusercontent.com/JebonRX/SynXNet/main/limit-speed.sh"
 chmod +x autobackup
 chmod +x backup
 chmod +x bckp
 chmod +x restore
-chmod +x strt
+#chmod +x strt
 chmod +x limit-speed
 chmod +x clear-log
 cd
