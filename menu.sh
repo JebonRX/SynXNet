@@ -59,7 +59,7 @@ fi
 #############################
 # ✅ Debian (old vnstat format — UPPER)
 #############################
-if [ "$OS" = "ubuntu" ]; then
+if [ "$OS" = "debian" ]; then
 
     # Today
     dtoday="$(vnstat -i $iface | grep "today" | awk '{print $2" "substr($3,1,1)}')"
@@ -79,7 +79,7 @@ if [ "$OS" = "ubuntu" ]; then
 #############################
 # ✅ Ubuntu (vnstat v2 format — LOWER)
 #############################
-elif [ "$OS" = "debian" ]; then
+elif [ "$OS" = "ubuntu" ]; then
 
     # Monthly
     dmon="$(vnstat -m | grep $(date +%Y-%m) | awk '{print $2, $3}')"
