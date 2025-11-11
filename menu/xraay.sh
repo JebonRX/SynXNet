@@ -100,7 +100,7 @@ sed -i '/#xray-vmess-nontls$/a\#vms '"$user $exp $harini $uuid"'\
 cat>/usr/local/etc/xray/$user-tls.json<<EOF
       {
       "v": "2",
-      "ps": "${user}",
+      "ps": "VMESS_TLS_${user}_${exp}",
       "add": "${sts}${domain}",
       "port": "${tls}",
       "id": "${uuid}",
@@ -116,7 +116,7 @@ EOF
 cat>/usr/local/etc/xray/$user-none.json<<EOF
       {
       "v": "2",
-      "ps": "${user}",
+      "ps": "VMESS_NTLS_${user}_${exp}",
       "add": "${sts}${domain}",
       "port": "${none}",
       "id": "${uuid}",
@@ -287,7 +287,7 @@ sed -i '/#xray-vmess-nontls$/a\#vms '"$user $exp $harini $uuid"'\
 cat>/usr/local/etc/xray/$user-tls.json<<EOF
       {
       "v": "2",
-      "ps": "${user}",
+      "ps": "VMESS_TLS_${user}_${exp}",
       "add": "${sts}${domain}",
       "port": "${tls}",
       "id": "${uuid}",
@@ -303,7 +303,7 @@ EOF
 cat>/usr/local/etc/xray/$user-none.json<<EOF
       {
       "v": "2",
-      "ps": "${user}",
+      "ps": "VMESS_NTLS_${user}_${exp}",
       "add": "${sts}${domain}",
       "port": "${none}",
       "id": "${uuid}",
@@ -564,7 +564,7 @@ uuid=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | se
 cat>/usr/local/etc/xray/$user-tls.json<<EOF
       {
       "v": "2",
-      "ps": "${user}",
+      "ps": "VMESS_TLS_${user}_${exp}",
       "add": "${sts}${domain}",
       "port": "${tls}",
       "id": "${uuid}",
@@ -580,7 +580,7 @@ EOF
 cat>/usr/local/etc/xray/$user-none.json<<EOF
       {
       "v": "2",
-      "ps": "${user}",
+      "ps": "VMESS_NTLS_${user}_${exp}",
       "add": "${sts}${domain}",
       "port": "${none}",
       "id": "${uuid}",
@@ -824,8 +824,8 @@ sed -i '/#xray-vless-tls$/a\#vls '"$user $exp $harini $uuid"'\
 },{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#xray-vless-nontls$/a\#vls '"$user $exp $harini $uuid"'\
 },{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
-vlesslink1="vless://${uuid}@${sts}${domain}:$tls?path=$patchtls&security=tls&encryption=none&type=ws&sni=$sni#${user}"
-vlesslink2="vless://${uuid}@${sts}${domain}:$none?path=$patchnontls&encryption=none&host=$sni&type=ws#${user}"
+vlesslink1="vless://${uuid}@${sts}${domain}:$tls?path=$patchtls&security=tls&encryption=none&type=ws&sni=$sni#VLESS_TLS_${user}_${exp}"
+vlesslink2="vless://${uuid}@${sts}${domain}:$none?path=$patchnontls&encryption=none&host=$sni&type=ws#VLESS_NTLS_${user}_${exp}"
 systemctl restart xray
 systemctl restart xray@none
 clear
@@ -885,8 +885,8 @@ sed -i '/#xray-vless-tls$/a\#vls '"$user $exp $harini $uuid"'\
 },{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#xray-vless-nontls$/a\#vls '"$user $exp $harini $uuid"'\
 },{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
-vlesslink1="vless://${uuid}@${sts}${domain}:$tls?path=$patchtls&security=tls&encryption=none&type=ws&sni=$sni#${user}"
-vlesslink2="vless://${uuid}@${sts}${domain}:$none?path=$patchnontls&encryption=none&host=$sni&type=ws#${user}"
+vlesslink1="vless://${uuid}@${sts}${domain}:$tls?path=$patchtls&security=tls&encryption=none&type=ws&sni=$sni#VLESS_TLS_${user}_${exp}"
+vlesslink2="vless://${uuid}@${sts}${domain}:$none?path=$patchnontls&encryption=none&host=$sni&type=ws#VLESS_NTLS_${user}_${exp}"
 systemctl restart xray
 systemctl restart xray@none
 clear
@@ -1032,8 +1032,8 @@ user=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | se
 harini=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
 exp=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
 uuid=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
-vlesslink1="vless://${uuid}@${sts}${domain}:$tls?path=$patchtls&security=tls&encryption=none&type=ws&sni=$sni#${user}"
-vlesslink2="vless://${uuid}@${sts}${domain}:$none?path=$patchnontls&encryption=none&host=$sni&type=ws#${user}"
+vlesslink1="vless://${uuid}@${sts}${domain}:$tls?path=$patchtls&security=tls&encryption=none&type=ws&sni=$sni#VLESS_NTLS_${user}_${exp}"
+vlesslink2="vless://${uuid}@${sts}${domain}:$none?path=$patchnontls&encryption=none&host=$sni&type=ws#VLESS_NTLS_${user}_${exp}"
 clear
 echo -e ""
 echo -e "\e[$line═════════[XRAY VLESS WS]═════════\e[m"
@@ -1175,8 +1175,8 @@ exp=`date -d "$masaaktif days" +"%Y-%m-%d"`
 harini=`date -d "0 days" +"%Y-%m-%d"`
 sed -i '/#xray-vless-xtls$/a\#vxtls '"$user $exp $harini $uuid"'\
 },{"id": "'""$uuid""'","flow": "'""xtls-rprx-direct""'","level": '"0"',"email": "'""$user""'"' /usr/local/etc/xray/config.json
-vlesslink1="vless://${uuid}@${sts}${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-direct&sni=$sni#${user}"
-vlesslink2="vless://${uuid}@${sts}${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-splice&sni=$sni#${user}"
+vlesslink1="vless://${uuid}@${sts}${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-direct&sni=$sni#VLESS_XTLS_Direct_${user}_${exp}"
+vlesslink2="vless://${uuid}@${sts}${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-splice&sni=$sni#VLESS_XTLS_Splice_${user}_${exp}"
 systemctl restart xray
 clear
 echo -e ""
@@ -1228,8 +1228,8 @@ fi
 harini=`date -d "0 days" +"%Y-%m-%d"`
 sed -i '/#xray-vless-xtls$/a\#vxtls '"$user $exp $harini $uuid"'\
 },{"id": "'""$uuid""'","flow": "'""xtls-rprx-direct""'","level": '"0"',"email": "'""$user""'"' /usr/local/etc/xray/config.json
-vlesslink1="vless://${uuid}@${sts}${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-direct&sni=$sni#${user}"
-vlesslink2="vless://${uuid}@${sts}${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-splice&sni=$sni#${user}"
+vlesslink1="vless://${uuid}@${sts}${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-direct&sni=$sni#VLESS_XTLS_Direct_${user}_${exp}"
+vlesslink2="vless://${uuid}@${sts}${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-splice&sni=$sni#VLESS_XTLS_Splice_${user}_${exp}"
 systemctl restart xray
 clear
 echo -e ""
@@ -1368,8 +1368,8 @@ user=$(grep -E "^#vxtls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | 
 harini=$(grep -E "^#vxtls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
 exp=$(grep -E "^#vxtls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
 uuid=$(grep -E "^#vxtls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
-vlesslink1="vless://${uuid}@${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-direct&sni=bug.com#${user}"
-vlesslink2="vless://${uuid}@${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-splice&sni=bug.com#${user}"
+vlesslink1="vless://${uuid}@${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-direct&sni=bug.com#VLESS_XTLS_Direct_${user}_${exp}"
+vlesslink2="vless://${uuid}@${domain}:$xtls?security=xtls&encryption=none&headerType=none&type=tcp&flow=xtls-rprx-splice&sni=bug.com#VLESS_XTLS_Splice_${user}_${exp}"
 clear
 echo -e ""
 echo -e "\e[$line════════[XRAY VLESS XTLS]════════\e[m"
