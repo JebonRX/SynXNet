@@ -39,6 +39,44 @@ read nm || nm=""
 printf '%s\n' "$nm" > /root/provided
 clear
 
+# ───────────────────────────────────────────────
+# Pilihan IPv4 / IPv6
+# ───────────────────────────────────────────────
+clear
+printf '\n\033[1;32m───────────────────────────────────────────────\033[0m\n'
+printf '   🌐  \033[1;37mSelect Network Mode\033[0m\n'
+printf '   \033[1;33m1) IPv4 Only (Disable IPv6)\033[0m\n'
+printf '   \033[1;36m2) IPv4 + IPv6 (Enable IPv6)\033[0m\n'
+printf '\033[1;32m───────────────────────────────────────────────\033[0m\n'
+read -p "   Choose (1/2): " ipmode
+
+# Function disable IPv6
+disable_ipv6() {
+    echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
+    sed -i '/disable_ipv6/d' /etc/rc.local
+    sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local
+}
+
+# Function enable IPv6
+enable_ipv6() {
+    echo 0 > /proc/sys/net/ipv6/conf/all/disable_ipv6
+    sed -i '/disable_ipv6/d' /etc/rc.local
+}
+
+# Apply user choice
+if [[ "$ipmode" == "1" ]]; then
+    printf '\n\033[1;31mIPv6 Disabled (IPv4 Only)\033[0m\n'
+    disable_ipv6
+elif [[ "$ipmode" == "2" ]]; then
+    printf '\n\033[1;32mIPv6 Enabled (IPv4 + IPv6)\033[0m\n'
+    enable_ipv6
+else
+    printf '\n\033[1;31mInvalid input. Default: IPv4 Only\033[0m\n'
+    disable_ipv6
+fi
+sleep 1
+clear
+
 # =============================
 # start installing setup
 # =============================
