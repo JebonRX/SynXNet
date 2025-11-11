@@ -298,14 +298,14 @@ echo -e " Xray Trojan Tcp         : "$green"running"$NC" ✓"
 else
 echo -e " Xray Trojan Tcp         : "$red"not running (Error)"$NC" "
 fi
-status="$(systemctl show trojan-go.service --no-page)"
-status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
-if [ "${status_text}" == "active" ]
-then
-echo -e " Trojan Go               : "$green"running"$NC" ✓"
-else
-echo -e " Trojan Go               : "$red"not running (Error)"$NC" "
-fi
+#status="$(systemctl show trojan-go.service --no-page)"
+#status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
+#if [ "${status_text}" == "active" ]
+#then
+#echo -e " Trojan Go               : "$green"running"$NC" ✓"
+#else
+#echo -e " Trojan Go               : "$red"not running (Error)"$NC" "
+#fi
 echo -e ""
 echo -e "\e[1;33mSTATUS NOOBZVPN:\e[0m"
 echo -e "\e[0;34m-----------------\e[0m"
