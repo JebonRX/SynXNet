@@ -208,5 +208,15 @@ rm -f /root/ohp-dropbear.sh
 rm -f /root/ohp-ssh.sh
 rm -f /root/websocket.sh
 rm -r setup.sh
+
+# Colour Default
+echo "1;34m" > /etc/banner
+echo "30m" > /etc/box
+echo "1;34m" > /etc/line
+echo "1;37m" > /etc/text
+echo "1;37m" > /etc/below
+echo "47m" > /etc/back
+echo "1;35m" > /etc/number
+echo Standard > /usr/bin/test
 sleep 5
 reboot
