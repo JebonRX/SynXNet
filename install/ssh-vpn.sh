@@ -341,7 +341,7 @@ wget -O cfd "https://raw.githubusercontent.com/JebonRX/SynXNet/main/cloud/cfd.sh
 wget -O cfp "https://raw.githubusercontent.com/JebonRX/SynXNet/main/cloud/cfp.sh"
 wget -O swap "https://raw.githubusercontent.com/JebonRX/SynXNet/main/swapkvm.sh"
 wget -O check-sc "https://raw.githubusercontent.com/JebonRX/SynXNet/main/system/running.sh"
-wget -O ssh "https://raw.githubusercontent.com/JebonRX/SynXNet/main/menu/ssh.sh"
+wget -O ssh2 "https://raw.githubusercontent.com/JebonRX/SynXNet/main/menu/ssh2.sh"
 wget -O autoreboot "https://raw.githubusercontent.com/JebonRX/SynXNet/main/system/autoreboot.sh"
 wget -O bbr "https://raw.githubusercontent.com/JebonRX/SynXNet/main/system/bbr.sh"
 wget -O port-ohp "https://raw.githubusercontent.com/JebonRX/SynXNet/main/change-port/port-ohp.sh"
