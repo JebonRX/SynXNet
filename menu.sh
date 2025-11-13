@@ -196,7 +196,7 @@ xraay
 trojaan
 ;;
 3)
-ssh
+ssh2
 ;;
 4)
 menu-noobzvpn
