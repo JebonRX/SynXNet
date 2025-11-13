@@ -51,7 +51,8 @@ fi
 
 # gather ports/services (best-effort, keep original logic)
 ssl=$(grep -w "Stunnel4" ~/log-install.txt 2>/dev/null | cut -d: -f2 | xargs)
-sqd=$(grep -w "Squid" ~/log-install.txt 2>/dev/null | cut -d: -f2 | xargs)
+sqd=$(cat /etc/squid/squid.conf | grep -i http_port | awk '{print $2}' | head -n1)
+sqd2=$(cat /etc/squid/squid.conf | grep -i http_port | awk '{print $2}' | tail -n1)
 ovpn=$(netstat -nlpt 2>/dev/null | grep -i openvpn | grep -i 0.0.0.0 | awk '{print $4}' | cut -d: -f2 | head -n1)
 ovpn2=$(netstat -nlpu 2>/dev/null | grep -i openvpn | grep -i 0.0.0.0 | awk '{print $4}' | cut -d: -f2 | head -n1)
 ovpn3=$(grep -w "OHP OpenVPN" ~/log-install.txt 2>/dev/null | cut -d: -f2 | sed 's/ //g')
@@ -103,33 +104,31 @@ exp=$(chage -l "$Login" 2>/dev/null | grep "Account expires" | awk -F": " '{prin
 
 echo ""
 echo -e "Premium Account SSH & OpenVPN"
-#echo -e "\e[$line═════════════════════════════════\e[m"
-echo -e "\e[$line═══════════════════════════════════════════════════════\e[m"
-echo -e "Username       : $Login"
-echo -e "Password       : $Pass"
-#echo -e "\e[$line═════════════════════════════════\e[m"
-echo -e "\e[$line═══════════════════════════════════════════════════════\e[m"
-echo -e "Domain         : $domain"
+echo -e "--------------"
+echo -e "Username       : \`$Login\`"
+echo -e "Password       : \`$Pass\`"
+echo -e "--------------"
+echo -e "Domain         : \`$domain\`"
 echo -e "IP/Host        : $MYIP"
 echo -e "OpenSSH        : 22"
 echo -e "Dropbear       : 442, 109"
 echo -e "SSL/TLS        : $ssl"
-echo -e "UDP-CUSTOM     : 1-65535"
-echo -e "WS SSH(HTTP)   : $wsdropbear"
-echo -e "WS SSL(HTTPS)  : $wsstunnel"
+echo -e "UDP-CUSTOM     : \`1-65535\`"
+echo -e "WS SSH(HTTP)   : \`$wsdropbear\`"
+echo -e "WS SSL(HTTPS)  : $wsstunnel , 2096 "
 echo -e "WS OpenVPN     : $wsovpn"
 echo -e "OHP Dropbear   : $ohpdrop"
 echo -e "OHP OpenSSH    : $ohpssh"
 echo -e "OHP OpenVPN    : $ovpn3"
-echo -e "Port Squid     : $sqd"
+echo -e "Port Squid     : $sqd, $sqd2"
 echo -e "Badvpn(UDPGW)  : 7100-7300"
-#echo -e "\e[$line═════════════════════════════════\e[m"
-echo -e "\e[$line═══════════════════════════════════════════════════════\e[m"
-echo -e "CONFIG SSH HTTP CUSTOM"
-echo -e "SSH-WS      : $(cat /usr/local/etc/xray/domain):80@$Login:$Pass"
-echo -e "SSH-WSS     : $(cat /usr/local/etc/xray/domain):443@$Login:$Pass"
-echo -e "UDP-CUSTOM  : $(cat /usr/local/etc/xray/domain):1-65535@$Login:$Pass"
-echo -e "\e[$line═══════════════════════════════════════════════════════\e[m"
+echo "═══════════════════════════════════════════════════════"
+echo "CONFIG SSH HTTP CUSTOM"
+echo -e "--------------"
+echo "SSHWS       : \`$(cat /usr/local/etc/xray/domain):$wsdropbear@$Login:$Pass\`"
+echo "SSHWSS      : \`$(cat /usr/local/etc/xray/domain):$wsstunnel@$Login:$Pass\`"
+echo "UDP-CUSTOM  : \`$(cat /usr/local/etc/xray/domain):1-65535@$Login:$Pass\`"
+echo "═══════════════════════════════════════════════════════"
 echo -e "CONFIG OPENVPN"
 echo -e "--------------"
 echo -e "OpenVPN TCP : $ovpn http://$MYIP:81/client-tcp-$ovpn.ovpn"
