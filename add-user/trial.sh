@@ -8,6 +8,7 @@ line=$(cat /etc/line)
 # BACKGROUND TEXT COLOUR
 back_text=$(cat /etc/back)
 clear
+MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
 IP=$(wget -qO- icanhazip.com);
 source /var/lib/premium-script/ipvps.conf
 if [[ "$IP" = "" ]]; then
