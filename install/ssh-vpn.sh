@@ -223,10 +223,6 @@ cert = /etc/stunnel/stunnel.pem
 [dropbear]
 accept = 737
 connect = 127.0.0.1:22
-
-[fallback-stunnel]
-accept = 2096
-connect = 127.0.0.1:2091
 END
 
 # make a certificate
@@ -394,7 +390,7 @@ chmod +x cfd
 chmod +x cfp
 chmod +x swap
 chmod +x check-sc
-chmod +x ssh2
+chmod +x ssh
 chmod +x autoreboot
 chmod +x bbr
 chmod +x port-ohp
