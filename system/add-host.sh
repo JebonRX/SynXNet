@@ -21,6 +21,7 @@ echo "Please Input Your Pointing Domain In Cloudflare "
 read -rp "Domain/Host: " -e host
 echo "IP=$host" >> /var/lib/premium-script/ipvps.conf
 #rm -f /home/domain
+sed -i "s/sshws.${dom}/sshws.${domain}/g" /usr/local/etc/xray/config.json;
 echo "$host" > /usr/local/etc/xray/domain
 domain=$(cat /usr/local/etc/xray/domain)
 echo ""
@@ -78,14 +79,22 @@ echo Starting Update SSL Certificate
 sleep 0.5
 source /var/lib/premium-script/ipvps.conf
 systemctl stop xray
-#systemctl stop trojan-go
+
 # GENERATE CRT
-/root/.acme.sh/acme.sh --server $acmeh \
-        --register-account  --accountemail $emailcf
-/root/.acme.sh/acme.sh --server $acmeh --issue -d $domain --standalone -k ec-256			   
-~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /usr/local/etc/xray/xray.crt --keypath /usr/local/etc/xray/xray.key --ecc
+#/root/.acme.sh/acme.sh --server $acmeh \
+#        --register-account  --accountemail $emailcf
+#/root/.acme.sh/acme.sh --server $acmeh --issue -d $domain --standalone -k ec-256			   
+#~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /usr/local/etc/xray/xray.crt --keypath /usr/local/etc/xray/xray.key --ecc
+
+# // GENERATE CERT
+/root/.acme.sh/acme.sh --upgrade --auto-upgrade
+/root/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+/root/.acme.sh/acme.sh --issue -d $domain -d sshws.$domain --standalone -k ec-256 --listen-v6
+~/.acme.sh/acme.sh --installcert -d $domain -d sshws.$domain --fullchainpath /usr/local/etc/xray/xray.crt --keypath /usr/local/etc/xray/xray.key --ecc
+
+# restart xray
 systemctl start xray
-#systemctl start trojan-go
+
 #Done
 echo -e "[${GREEN}Done${NC}]"
 else
