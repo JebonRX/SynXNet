@@ -96,6 +96,11 @@ cat> /usr/local/etc/xray/config.json << END
                 "decryption": "none",
                 "fallbacks": [
                     {
+                        "name": "sshws.${domain}",
+                        "dest": 2091,
+                        "xver": 1
+                    },
+                    {
                         "dest": 1310,
                         "xver": 1
                     },
