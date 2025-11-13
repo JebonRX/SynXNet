@@ -3,10 +3,7 @@ import socket, threading, select, sys, time, getopt, concurrent.futures
 
 # Listen
 LISTENING_ADDR = '127.0.0.1'
-if sys.argv[1:]:
-  LISTENING_PORT = sys.argv[1]
-else:
-  LISTENING_PORT = 2091
+LISTENING_PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 700
 
 # Pass
 PASS = ''
